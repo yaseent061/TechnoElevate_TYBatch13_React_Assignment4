@@ -25,13 +25,31 @@ export default function MyPlaylist() {
       
     }
    
+    const handleDelete = (song) => {
+      axios
+        .delete(
+          `https://axios1-3ed16-default-rtdb.firebaseio.com/music/${song.key}.json`
+        )
+        .then((resp) => {
+          console.log("deleted");
+  
+          const updatedPlaylist = playList.filter((el) => {
+            return el.key !== song.key ? el : null;
+          });
+  
+          setPlayList(updatedPlaylist)
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    
+  }
     
     useEffect(() => {
         let arr =[]
         axios.get(
             "https://axios1-3ed16-default-rtdb.firebaseio.com/music.json",   
           ).then(data => {
-              console.log(data)
               for(let i in data.data){
                 arr.push({
                     key : i,
@@ -61,7 +79,7 @@ export default function MyPlaylist() {
                   <td>{i+1}</td>
                   <td>{el.name}</td>
                   <td>{el.singer}</td>
-                  <td><button className="btn btn-danger">Delete</button></td>
+                  <td><button className="btn btn-danger" onClick={()=>{handleDelete(el)}}>Delete</button></td>
           </tr>)
       })}
        </tbody>
